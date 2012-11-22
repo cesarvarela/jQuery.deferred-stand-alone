@@ -1,3 +1,22 @@
+/*
+ * jQuery.Deferred stand alone
+ *
+ */
+
+
+/*!
+ * jQuery JavaScript Library v1.8.3
+ * http://jquery.com/
+ *
+ * Includes Sizzle.js
+ * http://sizzlejs.com/
+ *
+ * Copyright 2012 jQuery Foundation and other contributors
+ * Released under the MIT license
+ * http://jquery.org/license
+ *
+ * Date: Tue Nov 13 2012 08:20:33 GMT-0500 (Eastern Standard Time)
+ */
 (function(window, undefined) {
   // Save a reference to some core methods
   var core_push = Array.prototype.push,
@@ -8,6 +27,14 @@
     core_trim = String.prototype.trim,
     core_rspace = /\s+/,
     class2type = [],
+      // Map over jQuery in case of overwrite
+    _jQuery = window.jQuery,
+      // Map over the $ in case of overwrite
+    _$ = window.$,
+    
+    /**** actually jQuery isnt called as a function, but i decided to mantain it, 
+    to keep the code as much untouched as possible **/
+
     // Define a local copy of jQuery
     jQuery = function(selector, context) {
       // The jQuery object is actually just the init constructor 'enhanced'
@@ -62,7 +89,21 @@
             continue;
           }
 
-          if(copy !== undefined) {
+          // Recurse if we're merging plain objects or arrays
+          if(deep && copy && (jQuery.isPlainObject(copy) || (copyIsArray = jQuery.isArray(copy)))) {
+            if(copyIsArray) {
+              copyIsArray = false;
+              clone = src && jQuery.isArray(src) ? src : [];
+
+            } else {
+              clone = src && jQuery.isPlainObject(src) ? src : {};
+            }
+
+            // Never move original objects, clone them
+            target[name] = jQuery.extend(deep, clone, copy);
+
+            // Don't bring in undefined values
+          } else if(copy !== undefined) {
             target[name] = copy;
           }
         }
@@ -85,6 +126,17 @@
 
 
   jQuery.extend({
+    noConflict: function(deep) {
+      if(window.$ === jQuery) {
+        window.$ = _$;
+      }
+
+      if(deep && window.jQuery === jQuery) {
+        window.jQuery = _jQuery;
+      }
+
+      return jQuery;
+    },
     inArray: function(elem, arr, i) {
       var len;
 
