@@ -33,12 +33,16 @@
     _$ = window.$,
     
     /**** actually jQuery isnt called as a function, but i decided to mantain it, 
-    to keep the code as much untouched as possible **/
+    to keep the code as much untouched as possible ***/
 
     // Define a local copy of jQuery
-    jQuery = function(selector, context) {
+    jQuery = function(selector) {
+
+      //alert us that this is an special version 
+      if(selector)
+        throw "This is the stand alone version of jQuery.Deferred there isn't support for selectors, use jQuery.noConflict() and include a complete jQuery";
       // The jQuery object is actually just the init constructor 'enhanced'
-      return new jQuery.fn.init(selector, context);
+      return new jQuery.fn.init();
     };
 
   jQuery.fn = jQuery.prototype = {
